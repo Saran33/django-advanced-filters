@@ -6,7 +6,7 @@ from django.contrib.admin.utils import unquote
 from django.http import HttpResponseRedirect
 from django.shortcuts import resolve_url
 
-from .forms import AdvancedFilterForm
+from .forms import AdvancedFilterForm, FixAdvancedFilterForm
 from .models import AdvancedFilter
 
 # django < 1.9 support
@@ -164,3 +164,7 @@ class AdvancedFilterAdmin(admin.ModelAdmin):
 
 
 admin.site.register(AdvancedFilter, AdvancedFilterAdmin)
+
+
+class FixAdminAdvancedFiltersMixin(AdminAdvancedFiltersMixin):
+    advanced_filter_form = FixAdvancedFilterForm
