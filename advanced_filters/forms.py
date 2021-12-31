@@ -21,6 +21,8 @@ from django.utils.text import capfirst
 from .models import AdvancedFilter
 from .form_helpers import CleanWhiteSpacesMixin,  VaryingTypeCharField
 
+from advanced_filters import forms as adv_forms
+
 # django < 1.9 support
 from django import VERSION
 if VERSION >= (2, 0):
@@ -166,6 +168,11 @@ class AdvancedFilterQueryForm(CleanWhiteSpacesMixin, forms.Form):
         data['value'] = (dtfrom, dtto)
 
     def clean(self):
+
+        # for form in self.fields_formset:
+        #     if not form.is_valid():
+        #         form.cleaned_data = {'field': 'id', 'DELETE': True}
+
         cleaned_data = super(AdvancedFilterQueryForm, self).clean()
         if cleaned_data.get('operator') == "range":
             if ('value_from' in cleaned_data and
@@ -365,3 +372,12 @@ class AdvancedFilterForm(CleanWhiteSpacesMixin, forms.ModelForm):
         self.instance.query = self.generate_query()
         self.instance.model = self.cleaned_data.get('model')
         return super(AdvancedFilterForm, self).save(commit)
+
+
+class FixAdvancedFilterForm(adv_forms.AdvancedFilterForm):
+    def clean(self):
+        for form in self.fields_formset:
+            if not form.is_valid():
+                form.cleaned_data = {'field':'id', 'DELETE': True}
+        return super().clean()
+
